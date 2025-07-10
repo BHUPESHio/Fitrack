@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Dashboard | FitTrack</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+</head>
+<body class="dash-body">
+  <header class="main-header">
+    <nav class="navbar">
+      <div class="logo">FitTrack</div>
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link">Home</a></li>
+        <li><a href="/dashboard" >Dashboard</a></li>
+        <li><a href="/chatbot" class="nav-link active">FitChat</a></li>
+      </ul>
+      <span>👤 {{ user.name }}</span>
+    </nav>
+  </header>
+
+  <div class="chat-container">
+    <h1>💪 FitBot</h1>
+    <div id="chat-box"></div>
+    <form id="chat-form">
+
+  <input type="text" id="message" placeholder="Ask something..." required />
+  <input type="file" id="image" accept="image/*" />
+  <button type="submit">Send</button>
+  <button type="button" id="mic-btn">🎤</button>
+
+
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+</body>
+</html>

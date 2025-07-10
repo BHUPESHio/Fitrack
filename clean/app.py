@@ -18,6 +18,8 @@ from utilis.pdf_generator import generate_pdf
 from werkzeug.utils import secure_filename
 import base64
 import requests
+import traceback
+
 
 # Load environment variables
 load_dotenv()
@@ -27,16 +29,16 @@ CORS(app)
 
 # Configuration
 app.config['UPLOAD_FOLDER'] = 'uploads/'
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-MONGO_URI = os.getenv('MONGO_URI')
+app.config['SECRET_KEY'] = "bhup14"
+MONGO_URI ="mongodb+srv://Admin:bait1783@fittrack-db.4rtpw86.mongodb.net/?retryWrites=true&w=majority&appName=Fittrack-db"
 mongo=MongoClient(MONGO_URI)
 db=mongo["myDatabase"]
 users=db["users"]
 chats = db["chats"]
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  
 app.config['SESSION_COOKIE_SECURE'] = False  
-GEMINI_API_URL = os.getenv("GEMINI_API_URL")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+GEMINI_API_KEY = "AlzaSyB2NAPBRSI6gnxBd9rGcxA-ilqygBvnFWE"
 
 
 
@@ -470,16 +472,18 @@ def calculate_calories():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template("index.html")  # or use index.html with popup
+        return render_template("index.html")  # UI page
 
     try:
         data = request.get_json()
+        print("Received data:", data)  # 🐞 Debug print
 
         if not data or not all(k in data for k in ('email', 'password')):
             return jsonify({"success": False, "message": "Missing email or password"}), 400
 
         users_collection = get_users_collection()
         user = users_collection.find_one({'email': data['email']})
+        print("User found:", user is not None)  # 🐞 Debug print
 
         if user and bcrypt.check_password_hash(user['password'], data['password']):
             login_user(User(user), remember=True)
@@ -488,10 +492,9 @@ def login():
         return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
     except Exception as e:
-        print(f"Error during login: {e}")
+        print("Error during login:", str(e))
+        traceback.print_exc()  # full traceback
         return jsonify({"success": False, "message": "Login failed"}), 500
-
-
 
 
 @app.route('/logout')

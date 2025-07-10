@@ -14,6 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalTitle = document.getElementById('modal-title');
 
   // -------------------- Auth Modal Logic --------------------
+  if (localStorage.getItem('loggedIn') === 'true') {
+    authButton?.classList.add('hidden');
+    profileMenu?.classList.remove('hidden');
+  } else {
+    authButton?.classList.remove('hidden');
+    profileMenu?.classList.add('hidden');
+  }
+
   if (authButton && authModal) {
     authButton.addEventListener('click', () => {
       authModal.classList.remove('hidden');
@@ -48,16 +56,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const res = await fetch('/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-       credentials: 'include', 
+      credentials: 'include',
       body: JSON.stringify({ email, password })
     });
 
     const result = await res.json();
     if (result.success) {
       alert("Logged in successfully!");
+      localStorage.setItem('loggedIn', 'true'); // ✅ Store login state
       authModal.classList.add('hidden');
       authButton?.classList.add('hidden');
       profileMenu?.classList.remove('hidden');
+      window.location.reload(); // optional: to reflect login-restricted content
     } else {
       alert(result.message || "Login failed");
     }
@@ -79,9 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const result = await res.json();
     if (result.success) {
       alert("Signup successful!");
+      localStorage.setItem('loggedIn', 'true'); // ✅ Store login state
       authModal.classList.add('hidden');
       authButton?.classList.add('hidden');
       profileMenu?.classList.remove('hidden');
+      window.location.reload(); // optional
     } else {
       alert(result.message || "Signup failed");
     }
@@ -96,10 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const result = await res.json();
     if (result.success) {
       alert("Logged out!");
+      localStorage.removeItem('loggedIn'); // ✅ Clear login state
       window.location.href = '/';
     }
   });
-
   // -------------------- BMI Logic --------------------
   const bmiForm = document.getElementById('bmi-form');
   if (bmiForm) {

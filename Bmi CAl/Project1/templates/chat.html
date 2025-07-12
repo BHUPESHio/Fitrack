@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     html, body {
       margin: 0;
@@ -170,6 +171,24 @@
       font-size: 12px;
       margin-right: 8px;
     }
+    .bot-markdown table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.bot-markdown th, .bot-markdown td {
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  text-align: left;
+  background-color: #fff;
+}
+
+.bot-markdown th {
+  background-color: #eee;
+  font-weight: bold;
+}
 
   </style>
 </head>
@@ -208,7 +227,7 @@
   </div>
 </div>
 </div>
-  <script>
+<script>
   let currentChatId = null;
 
   async function fetchChatHistory() {
@@ -234,7 +253,7 @@
     messages.innerHTML = '';
 
     addMessage(data.question, 'user');
-    addMessage(data.reply, 'bot');
+    addMessage(marked.parse(data.reply), 'bot');  // ✅ Parse Markdown
 
     // 📄 PDF Button
     const pdfBtn = document.createElement('button');
@@ -265,7 +284,15 @@
   function addMessage(text, type) {
     const div = document.createElement('div');
     div.className = `message ${type}`;
-    div.innerHTML = text;
+    
+    // ✅ Add markdown support for bot responses
+    if (type === 'bot') {
+      div.innerHTML = marked.parse(text);
+      div.classList.add('bot-markdown');
+    } else {
+      div.innerHTML = text;
+    }
+
     document.getElementById('messages').appendChild(div);
   }
 
@@ -296,7 +323,8 @@
 
     const data = await res.json();
     const messages = document.getElementById('messages');
-    messages.lastChild.innerHTML = data.reply;
+    messages.lastChild.innerHTML = marked.parse(data.reply); // ✅ Render with formatting
+    messages.lastChild.classList.add('bot-markdown');
 
     document.getElementById('messageInput').value = '';
     if (document.getElementById('fileInput')) {
@@ -305,28 +333,29 @@
 
     fetchChatHistory();
   });
+
   // File Preview + Remove
-const fileInput = document.getElementById('fileInput');
-const filePreview = document.getElementById('filePreview');
+  const fileInput = document.getElementById('fileInput');
+  const filePreview = document.getElementById('filePreview');
 
-fileInput.addEventListener('change', () => {
-  filePreview.innerHTML = ''; // clear previous
-  const file = fileInput.files[0];
-  if (file) {
-    const fileName = document.createElement('span');
-    fileName.textContent = file.name;
+  fileInput.addEventListener('change', () => {
+    filePreview.innerHTML = ''; // clear previous
+    const file = fileInput.files[0];
+    if (file) {
+      const fileName = document.createElement('span');
+      fileName.textContent = file.name;
 
-    const removeBtn = document.createElement('span');
-    removeBtn.textContent = '❌';
-    removeBtn.onclick = () => {
-      fileInput.value = '';
-      filePreview.innerHTML = '';
-    };
+      const removeBtn = document.createElement('span');
+      removeBtn.textContent = '❌';
+      removeBtn.onclick = () => {
+        fileInput.value = '';
+        filePreview.innerHTML = '';
+      };
 
-    filePreview.appendChild(fileName);
-    filePreview.appendChild(removeBtn);
-  }
-});
+      filePreview.appendChild(fileName);
+      filePreview.appendChild(removeBtn);
+    }
+  });
 
   window.onload = fetchChatHistory;
 </script>

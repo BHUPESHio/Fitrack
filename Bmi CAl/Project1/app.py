@@ -19,7 +19,6 @@ from utils.chat import chat_bp
 
 
 
-
 # Load environment variables
 load_dotenv()
 
@@ -33,9 +32,10 @@ MONGO_URI="mongodb+srv://Admin:bait1783@fitrackdb.o4yvman.mongodb.net/?retryWrit
 mongo=MongoClient(MONGO_URI)
 db=mongo["myDatabase"]
 users=db["users"]
-GEMINI_API_KEY=""
+GEMINI_API_KEY = "AIzaSyCojl5hk_fItuAEjPU26E0sJiZ8uAoM2Vs"
+GEMINI_API_URL="https://gemini.googleapis.com/v1/models/gemini-2.5-pro:generateContent"
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-pro-vision")
+model = genai.GenerativeModel("gemini-2.5-pro")
 app.register_blueprint(chat_bp)
 
 
@@ -45,11 +45,9 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# Gemini API key from .env
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Configure Gemini
-genai.configure(api_key='AIzaSyARBAD_cAxWZNQUwU8y1XUVxGN9HDN6Cvg')
+genai.configure(api_key='AIzaSyCojl5hk_fItuAEjPU26E0sJiZ8uAoM2Vs')
 
 #Database Collections
 def get_users_collection():

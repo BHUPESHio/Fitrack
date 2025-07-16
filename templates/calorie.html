@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitTrack | BMI Calculator</title>
+    <title>FitTrack | Calorie Recommendation</title>
     <link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
@@ -89,7 +89,7 @@
             <h2 id="modal-title">Login</h2>
         </div>
 
-        <!-- Login Form -->
+       
         <!-- Login Form -->
 <form id="login-form" class="auth-form">
     <input type="email" placeholder="Email" required id="login-email">
@@ -107,21 +107,29 @@
 
 
         <!-- Signup Form -->
-       <!-- Signup Form -->
-<form id="signup-form" class="auth-form hidden">
+        <form id="signup-form" class="auth-form hidden">
     <input type="text" placeholder="Full Name" required>
     <input type="email" placeholder="Email" required id="signup-email">
     <input type="password" placeholder="Password" required>
     <button type="submit">Sign Up</button>
     <!-- Resend verification message for signup (initially hidden) -->
-    <p id="signup-resend-msg" class="hidden">
-        Didn’t receive your verification email? 
-        <span class="form-link" style="cursor:pointer;" onclick="resendVerification(document.getElementById('signup-email').value)">
-            Resend Verification Email
-        </span>
-    </p>
+
+    <div id="otp-section" style="display: none; margin-top: 15px;">
+  <input type="text" id="otp-input" placeholder="Enter OTP">
+  <button type="button" onclick="verifyOtp()">Verify OTP</button>
+  <p id="otp-message"></p>
+
+  <!-- ✅ Resend OTP Link -->
+  <p style="margin-top: 10px;">
+    Didn't receive the OTP? 
+    <span class="form-link" style="cursor:pointer;" onclick="resendOtp()">Resend OTP</span>
+  </p>
+</div>
+
+
     <p class="form-toggle">Already have an account? <span id="go-login" class="form-link">Login</span></p>
 </form>
+    <p id="signupMsg"></p>
 
     </div>
 </div>

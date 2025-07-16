@@ -786,7 +786,7 @@ button[type="submit"]:active,
 }
 
 .sidebar h2 {
-  font-family: var(--font-display);
+  font-family: 'Bebas-Neue',sans-serif;
   color: white;
   margin-bottom: var(--space-4);
   font-size: 1.25rem;
@@ -849,12 +849,15 @@ button[type="submit"]:active,
   padding: var(--space-4);
   border-top: 1px solid var(--gray-200);
   display: flex;
-  gap: var(--space-3);
   align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  box-sizing: border-box;     /* ✅ ensures padding doesn't shrink the width */
+  flex-shrink: 0;             /* ✅ prevents it from collapsing */
 }
 
 .chat-form input[type="text"] {
-  flex: 1;
+  flex: 2;
   border: 2px solid var(--gray-200);
   border-radius: var(--radius-lg);
   padding: var(--space-3) var(--space-4);
@@ -870,6 +873,10 @@ button[type="submit"]:active,
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
+  font-size: 1rem;
+  display: flex; /* ✅ Required for gap and alignment */
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .chat-form button:hover {
@@ -920,11 +927,35 @@ button[type="submit"]:active,
   border-radius: var(--radius-md);
   transition: background-color var(--transition-fast);
   font-size: 1.25rem;
+  margin-right: 10px;
 }
 
 .upload-label:hover {
   background-color: var(--gray-100);
 }
+#messageInput {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+  min-width: 0; /* avoid overflow issues */
+}
+
+#sendBtn {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#sendBtn:hover {
+  background-color: #218838;
+}
+
 
 /* Bot Markdown Styling */
 .bot-markdown h1,

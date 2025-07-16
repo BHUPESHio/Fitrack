@@ -34,7 +34,7 @@
             <ul class="nav-links">
                 <li><a href="/" >BMI</a></li>
                 <li><a href="/bodyfat">Body Fat %</a></li>
-                <li><a href="/idealweight" class="nav-links active">Ideal Weight</a></li>
+                <li><a href="/idealweight" class="active">Ideal Weight</a></li>
                 <li><a href="/calorie" >Calories Recommendation</a></li>
                 <li><a href="/bmi-predict" >BMI Prediction</a></li>
             </ul>
@@ -78,14 +78,14 @@
           <label for="height">Height:</label>
           <input type="number" id="height" step="any" placeholder="Enter height" required />
 
-          <button type="submit">Calculate</button>
+          <button type="submit" id="submitBtn">Calculate</button>
         </form>
 
         <div id="ideal-weight-result" class="hidden"></div>
 
       </div>
 
-      <div class="chart-box">
+      <div class="chart-box hidden">
         <canvas id="idealWeightChart"></canvas>
       </div>
     </div>
@@ -182,6 +182,21 @@
       });
     }
   });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+  const chartBox = document.querySelector('.chart-box');
+  const submitBtn = document.getElementById('submitBtn');
+
+  // Initially hide the chart box
+  chartBox.classList.add('hidden');
+
+  // Show the chart box on submit click
+  submitBtn.addEventListener('click', function () {
+    chartBox.classList.remove('hidden');
+  });
+});
+
 </script>
 
 

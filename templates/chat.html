@@ -12,12 +12,11 @@
       margin: 0;
       padding: 0;
       height: 100%;
-        width: 100%;
+      width: 100%;
     }
 
     body {
       font-family: 'Segoe UI', sans-serif;
-      margin: 0;
       display: flex;
       height: 100vh;
       overflow: hidden;
@@ -69,13 +68,13 @@
       display: flex;
       flex-direction: column;
     }
+
     .chat-window {
       flex: 1;
       padding: 20px;
       overflow-y: auto;
       background-color: #fff;
     }
-
 
     .chat-form {
       display: flex;
@@ -131,19 +130,6 @@
     }
 
     .new-chat-btn {
-      background: #2196f3;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .loading {
-      font-style: italic;
-      color: gray;
-    }
-    .new-chat-btn {
       background: #007bff;
       color: white;
       padding: 8px 10px;
@@ -152,6 +138,7 @@
       border-radius: 6px;
       cursor: pointer;
     }
+
     .upload-label {
       font-size: 20px;
       cursor: pointer;
@@ -175,64 +162,77 @@
       font-size: 12px;
       margin-right: 8px;
     }
+
     .bot-markdown table {
-  border-collapse: collapse;
-  width: 100%;
-  margin-top: 10px;
-  font-size: 14px;
-}
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+      font-size: 14px;
+    }
 
-.bot-markdown th, .bot-markdown td {
-  border: 1px solid #ccc;
-  padding: 8px 10px;
-  text-align: left;
-  background-color: #fff;
-}
+    .bot-markdown th, .bot-markdown td {
+      border: 1px solid #ccc;
+      padding: 8px 10px;
+      text-align: left;
+      background-color: #fff;
+    }
 
-.bot-markdown th {
-  background-color: #eee;
-  font-weight: bold;
-}
+    .bot-markdown th {
+      background-color: #eee;
+      font-weight: bold;
+    }
 
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
   </style>
 </head>
 <body>
-  <div>
-   <header class="main-header">
+<div>
+  <header class="main-header">
     <nav class="navbar">
       <div class="logo" style="font-family: 'Orbitron',sans-serif;">FitTrack</div>
       <ul class="nav-links">
         <li><a href="/">Home</a></li>
-        <li><a href="/dashboard" >Dashboard</a></li>
+        <li><a href="/dashboard">Dashboard</a></li>
         <li><a href="/chat" class="nav-link active">Fit-Chat</a></li>
       </ul>
       <span>👤 {{ user.name }}</span>
     </nav>
   </header>
- <div style="display: flex; height: calc(100vh - 60px); width: 100vw;">
-  <div class="sidebar">
-    <button class="new-chat-btn" onclick="startNewChat()" style="margin-bottom: 10px;">➕ New Chat</button>
-    <h2>Chat History</h2>
-    <div id="history" class="chat-history"></div>
-  </div>
 
-  <div class="main">
-    <div class="top-bar">
-      <div><strong>FitBot - Fitness Assistant</strong></div>
+  <div style="display: flex; height: calc(100vh - 60px); width: 100vw;">
+    <div class="sidebar">
+      <button class="new-chat-btn" onclick="startNewChat()" style="margin-bottom: 10px;">➕ New Chat</button>
+      <h2>Chat History</h2>
+      <div id="history" class="chat-history"></div>
     </div>
-    <div id="messages" class="chat-window"></div>
-    <form id="chatForm" class="chat-form" enctype="multipart/form-data">
-      <div id="filePreview" style="width:100%; font-size: 14px; margin-bottom: 10px;"></div>
-      <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; width: 100%; margin-bottom: 20px;">
-        <label for="fileInput" class="upload-label" style="margin-bottom:0;">📎</label>
-        <input type="file" id="fileInput" name="file" accept="image/*,.pdf,.doc,.txt" style="display: none;" />
-        <input type="text" id="messageInput" placeholder="Ask a fitness or health question..." required style="margin-bottom:0; flex:1;" />
-        <button type="submit" style="margin-bottom:0;">Send</button>
+
+    <div class="main">
+      <div class="top-bar">
+        <div><strong>FitBot - Fitness Assistant</strong></div>
+        <div id="chatActions" style="display: none;" class="action-buttons">
+          <button onclick="downloadCurrentChatPdf()" class="new-chat-btn">📄 Download as PDF</button>
+          <button onclick="deleteCurrentChat()" class="new-chat-btn" style="background-color: #f44336;">🗑️ Delete Chat</button>
+        </div>
       </div>
-    </form>
+
+      <div id="messages" class="chat-window"></div>
+
+      <form id="chatForm" class="chat-form" enctype="multipart/form-data">
+        <div id="filePreview" style="width:100%; font-size: 14px; margin-bottom: 10px;"></div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <label for="fileInput" class="upload-label">📎</label>
+          <input type="file" id="fileInput" name="file" accept="image/*,.pdf,.doc,.txt" style="display: none;" />
+          <input type="text" id="messageInput" placeholder="Ask a fitness or health question..." required style="flex:1;" />
+          <button type="submit">Send</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
-</div>
+
 <script>
   let currentChatId = null;
 
@@ -259,7 +259,7 @@
     messages.innerHTML = '';
 
     addMessage(data.question, 'user');
-    addMessage(marked.parse(data.reply), 'bot');  // ✅ Parse Markdown
+    addMessage(marked.parse(data.reply), 'bot');
     document.getElementById('chatActions').style.display = 'flex';
   }
 
@@ -270,12 +270,10 @@
   }
 
   async function deleteCurrentChat() {
-    if (currentChatId) {
-      if (confirm("Are you sure you want to delete this chat?")) {
-        await fetch(`/api/chat/delete/${currentChatId}`, { method: 'DELETE' });
-        startNewChat();
-        fetchChatHistory();
-      }
+    if (currentChatId && confirm("Are you sure you want to delete this chat?")) {
+      await fetch(`/api/chat/delete/${currentChatId}`, { method: 'DELETE' });
+      startNewChat();
+      fetchChatHistory();
     }
   }
 
@@ -286,14 +284,13 @@
     if (type === 'bot') {
       div.innerHTML = marked.parse(text);
       div.classList.add('bot-markdown');
-      // Create a container for the bot reply and copy button
       const container = document.createElement('div');
       container.style.display = 'flex';
       container.style.flexDirection = 'column';
       container.style.alignItems = 'flex-start';
-      // Bot reply
+
       container.appendChild(div);
-      // Copy button below reply, left corner
+
       const copyBtn = document.createElement('button');
       copyBtn.innerHTML = '📋';
       copyBtn.title = 'Copy reply';
@@ -302,14 +299,13 @@
       copyBtn.style.cursor = 'pointer';
       copyBtn.style.fontSize = '18px';
       copyBtn.style.marginTop = '4px';
-      copyBtn.style.marginLeft = '0';
-      copyBtn.onclick = function() {
-        // Remove markdown formatting for copy
+      copyBtn.onclick = function () {
         const temp = document.createElement('div');
         temp.innerHTML = marked.parse(text);
         const plainText = temp.textContent || temp.innerText || '';
         navigator.clipboard.writeText(plainText);
       };
+
       container.appendChild(copyBtn);
       document.getElementById('messages').appendChild(container);
     } else {
@@ -321,6 +317,7 @@
   function startNewChat() {
     currentChatId = null;
     document.getElementById('messages').innerHTML = '';
+    document.getElementById('chatActions').style.display = 'none';
   }
 
   document.getElementById('chatForm').addEventListener('submit', async (e) => {
@@ -331,7 +328,6 @@
 
     addMessage(message, 'user');
     addMessage('<span class="loading">Typing...</span>', 'bot');
-    document.getElementById('chatActions').style.display = 'flex';
 
     const formData = new FormData();
     formData.append('message', message);
@@ -346,7 +342,7 @@
 
     const data = await res.json();
     const messages = document.getElementById('messages');
-    messages.lastChild.innerHTML = marked.parse(data.reply); // ✅ Render with formatting
+    messages.lastChild.innerHTML = marked.parse(data.reply);
     messages.lastChild.classList.add('bot-markdown');
 
     document.getElementById('messageInput').value = '';
@@ -354,15 +350,15 @@
       document.getElementById('fileInput').value = '';
     }
 
+    document.getElementById('chatActions').style.display = 'flex';
     fetchChatHistory();
   });
 
-  // File Preview + Remove
   const fileInput = document.getElementById('fileInput');
   const filePreview = document.getElementById('filePreview');
 
   fileInput.addEventListener('change', () => {
-    filePreview.innerHTML = ''; // clear previous
+    filePreview.innerHTML = '';
     const file = fileInput.files[0];
     if (file) {
       const fileName = document.createElement('span');

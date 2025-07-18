@@ -90,6 +90,57 @@
       </div>
     </div>
   </main>
+  <!-- Auth Modal -->
+<div id="auth-modal" class="auth-modal hidden">
+    <div class="auth-box">
+        <button type="button" class="close-modal">✕</button>
+        <div class="auth-tabs">
+            <h2 id="modal-title">Login</h2>
+        </div>
+
+       
+        <!-- Login Form -->
+<form id="login-form" class="auth-form">
+    <input type="email" placeholder="Email" required id="login-email">
+    <input type="password" placeholder="Password" required>
+    <button  type="submit">Login</button>
+    <!-- Resend verification message (hidden by default) -->
+    <p id="resend-verification-msg" class="hidden">
+        Didn’t receive your verification email? 
+        <span class="form-link" style="cursor:pointer;" onclick="resendVerification(document.getElementById('login-email').value)">
+            Resend Verification Email
+        </span>
+    </p>
+    <p class="form-toggle">Don't have an account? <span id="go-signup" class="form-link">Sign Up</span></p>
+</form>
+
+
+        <!-- Signup Form -->
+        <form id="signup-form" class="auth-form hidden">
+    <input type="text" placeholder="Full Name" required>
+    <input type="email" placeholder="Email" required id="signup-email">
+    <input type="password" placeholder="Password" required>
+    <button  type="submit">Sign Up</button>
+    <!-- Resend verification message for signup (initially hidden) -->
+
+    <div id="otp-section" style="display: none; margin-top: 15px;">
+  <input type="text" id="otp-input" placeholder="Enter OTP">
+  <button type="button" class="verify-otp-btn" onclick="verifyOtp()">Verify OTP</button>
+  <p id="otp-message"></p>
+
+  <!-- ✅ Resend OTP Link -->
+  <p style="margin-top: 10px;">
+    Didn't receive the OTP? 
+    <span class="form-link" style="cursor:pointer;" onclick="resendOtp()">Resend OTP</span>
+  </p>
+</div>
+
+
+    <p class="form-toggle">Already have an account? <span id="go-login" class="form-link">Login</span></p>
+</form>
+    <p id="signupMsg"></p>
+    </div>
+</div>
   {% if current_user.is_authenticated %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -198,7 +249,6 @@
 });
 
 </script>
-
 
   <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

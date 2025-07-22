@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack | BMI Calculator</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    
+</head>
+<body>
+    <!-- Overlay for sidebars -->
+    <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
+
+    <!-- Sidebar for mobile/tablet (left) -->
+    <div id="sidebar" class="sidebar hidden">
+        <div class="sidebar-header">
+            <span class="logo">FitTrack</span>
+            <button id="closeSidebar" class="close-sidebar">&times;</button>
+        </div>
+        <ul class="sidebar-links">
+            <li><a href="/" class="nav-link active">BMI</a></li>
+            <li><a href="/bodyfat">Body Fat %</a></li>
+            <li><a href="/idealweight">Ideal Weight</a></li>
+            <li><a href="/calorie">Calories Recommendation</a></li>
+            <li><a href="/bmi-predict">BMI-Predict</a></li>
+        </ul>
+        <button class="auth-button sidebar-auth">Log-In</button>
+    </div>
+
+    <!-- Profile Sidebar (right) -->
+    <div id="profileSidebar" class="profile-sidebar hidden">
+        <div class="profile-sidebar-header">
+            <span class="profile-username">{{ current_user.name if current_user.is_authenticated else '' }}</span>
+            <button id="closeProfileSidebar" class="close-sidebar">&times;</button>
+        </div>
+        <ul class="profile-sidebar-links">
+            <li><a href="/dashboard"><span class="icon">📊</span> Dashboard</a></li>
+            <li><a href="/chat"><span class="icon">💬</span> Fit-Chat</a></li>
+            <li><a href="#" id="profile-logout-link" class="logout-link"><span class="icon">🚪</span> <span class="logout-text">Logout</span></a></li>
+        </ul>
+    </div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <nav class="navbar">
+            <button id="sidebarToggle" class="sidebar-toggle" aria-label="Open sidebar">&#9776;</button>
+            <div class="logo">FitTrack</div>
+            <ul class="nav-links">
+                <li><a href="/" class="nav-link active">BMI</a></li>
+                <li><a href="/bodyfat">Body Fat %</a></li>
+                <li><a href="/idealweight">Ideal Weight</a></li>
+                <li><a href="/calorie">Calories Recommendation</a></li>
+                <li><a href="/bmi-predict">BMI-Predict</a></li>
+            </ul>
+            <!-- 👤 Profile icon (shown after login) -->
+            <div class="profile-menu{% if not current_user.is_authenticated %} hidden{% endif %}">
+                <button class="profile-icon">👤</button>
+            </div>
+            <!-- 🔐 Login button (hidden after login) -->
+            {% if not current_user.is_authenticated %}
+            <button class="auth-button" id="main-login-btn">Log-In</button>
+            {% endif %}
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+        <h2 class="page-title">Body Mass Index (BMI) Calculator</h2>
+
+        <div class="bmi-grid">
+            <!-- Form Section -->
+            <div class="form-box">
+                <form id="bmi-form">
+                    <div class="unit-switch">
+                        <label><input type="radio" name="units" value="metric" checked> Metric Units</label>
+                        <label><input type="radio" name="units" value="imperial"> Imperial Units</label>
+                    </div>
+
+                    <label for="age">Age:</label>
+                    <input type="number" id="age" min="2" placeholder="Enter age" required>
+
+                    <div class="child-only hidden">
+                        <label><input type="radio" name="gender" value="male"> Male</label>
+                        <label><input type="radio" name="gender" value="female"> Female</label>
+                    </div>
+
+                    <label for="weight">Weight:</label>
+                    <input type="number" id="weight" step="any" placeholder="Weight">
+
+                    <label for="height">Height:</label>
+                    <input type="number" id="height" step="any" placeholder="Height">
+
+                    <button type="submit" id="submitBtn">Calculate</button>
+                </form>
+                <div id="bmi-result" class="hidden result-box"></div>
+
+            </div>
+        
+
+            <!-- Chart Section -->
+             
+            <div class="chart-box hidden" >
+                <canvas id="bmiChart"></canvas>
+            </div>
+        </div>
+
+    </main>
+
+
+<!-- Auth Modal -->
+<div id="auth-modal" class="auth-modal hidden">
+    <div class="auth-box">
+        <button type="button" class="close-modal">✕</button>
+        <div class="auth-tabs">
+            <h2 id="modal-title">Login</h2>
+        </div>
+
+       
+        <!-- Login Form -->
+<form id="login-form" class="auth-form">
+    <input type="email" placeholder="Email" required id="login-email">
+    <input type="password" placeholder="Password" required>
+    <button  type="submit">Login</button>
+    <!-- Resend verification message (hidden by default) -->
+    <p id="resend-verification-msg" class="hidden">
+        Didn’t receive your verification email? 
+        <span class="form-link" style="cursor:pointer;" onclick="resendVerification(document.getElementById('login-email').value)">
+            Resend Verification Email
+        </span>
+    </p>
+    <p class="form-toggle">Don't have an account? <span id="go-signup" class="form-link">Sign Up</span></p>
+</form>
+
+
+        <!-- Signup Form -->
+        <form id="signup-form" class="auth-form hidden">
+    <input type="text" placeholder="Full Name" required>
+    <input type="email" placeholder="Email" required id="signup-email">
+    <input type="password" placeholder="Password" required>
+    <button  type="submit">Sign Up</button>
+    <!-- Resend verification message for signup (initially hidden) -->
+
+    <div id="otp-section" style="display: none; margin-top: 15px;">
+  <input type="text" id="otp-input" placeholder="Enter OTP">
+  <button type="button" onclick="verifyOtp()">Verify OTP</button>
+  <p id="otp-message"></p>
+
+  <!-- ✅ Resend OTP Link -->
+  <p style="margin-top: 10px;">
+    Didn't receive the OTP? 
+    <span class="form-link" style="cursor:pointer;" onclick="resendOtp()">Resend OTP</span>
+  </p>
+</div>
+
+
+    <p class="form-toggle">Already have an account? <span id="go-login" class="form-link">Login</span></p>
+</form>
+    <p id="signupMsg"></p>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+{% if current_user.is_authenticated %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const signInButton = document.querySelector('.auth-button');
+        const profileMenu = document.querySelector('.profile-menu');
+        if (signInButton) signInButton.classList.add('hidden');
+        if (profileMenu) profileMenu.classList.remove('hidden');
+    });
+</script>
+{% endif %}
+
+<script>
+document.getElementById('signupForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  
+  const res = await fetch('/signup', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ name, email, password })
+  });
+
+  const data = await res.json();
+  document.getElementById('signupMsg').textContent = data.message;
+
+  if (data.success) {
+    document.getElementById('otpSection').style.display = 'block';
+    document.getElementById('sendOtpBtn').style.display = 'none';
+  }
+});
+
+document.getElementById('verifyOtpBtn').addEventListener('click', async function () {
+  const email = document.getElementById('email').value.trim();
+  const otp = document.getElementById('otp').value.trim();
+
+  const res = await fetch('/verify_otp', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ email, otp })
+  });
+
+  const data = await res.json();
+  document.getElementById('signupMsg').textContent = data.message;
+
+  if (data.success) {
+    alert("Verification Successful! Please login now.");
+    location.reload(); // or close modal and show login
+  }
+});
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+  const chartBox = document.querySelector('.chart-box');
+  const submitBtn = document.getElementById('submitBtn');
+
+  // Initially hide the chart box
+  chartBox.classList.add('hidden');
+
+  // Show the chart box on submit click
+  submitBtn.addEventListener('click', function () {
+    chartBox.classList.remove('hidden');
+  });
+});
+
+</script>
+</body>
+</html>
